@@ -24,6 +24,10 @@ public class SystemVendasApplication {
 			
 			List<Cliente> todosClientes = clienteRepository.obterTodos();
 			todosClientes.forEach(System.out::println);
+			
+			todosClientes.forEach(c->{
+				c.setNome(c.getNome() + "atulizado.");
+			});
 		};
 	}
 	
