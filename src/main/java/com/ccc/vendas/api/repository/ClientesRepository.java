@@ -49,7 +49,7 @@ public class ClientesRepository {
 	//bucas cliente por nome
 	public List<Cliente> buscarPorNome(String nome){
 		
-		return jdbcTemplate.query(SELECT_ALL.concat("where nome like ?"), 
+		return jdbcTemplate.query(SELECT_ALL.concat(" where nome like ?"), 
 				new Object[] {"%" + nome + "%" },
 				obterClienteMapper());
 		
@@ -62,12 +62,12 @@ public class ClientesRepository {
 		return cliente;
 	}
 
-	
+	//Deleta cliente por nome
 	public void deletar(Cliente cliente) {
 		deletar(cliente.getId());
 	}
 
-	
+	//Deleta cliente por ID
 	public void deletar(Integer id) {
 		jdbcTemplate.update(DELETE, new Object[] { id });
 	}
