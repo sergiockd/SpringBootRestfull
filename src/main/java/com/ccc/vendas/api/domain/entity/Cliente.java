@@ -1,10 +1,6 @@
 package com.ccc.vendas.api.domain.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
+import javax.persistence.*;
 
 
 //@Table(name = "tb_cliente") Exemplo, caso o nome da classe seja diferente do nome da table, podemos utilizar essa anotacação
@@ -14,11 +10,15 @@ public class Cliente {
 	public String toString() {
 		return "Cliente [id=" + id + ", nome=" + nome + "]";
 	}
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "id")
 	private Integer id;
+
+	@Column(name = "nome", length = 100)
 	private String nome;
+
 
 	public Cliente() {
 

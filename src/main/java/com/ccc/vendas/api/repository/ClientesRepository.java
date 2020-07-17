@@ -10,66 +10,65 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import com.ccc.vendas.api.domain.entity.Cliente;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 
 @Repository
 public class ClientesRepository {
-	private static String INSERT = "insert into cliente (nome) values (?)";
-	private static String SELECT_ALL = "SELECT * FROM CLIENTE";
-	private static String UPDATE = "update cliente set nome = ? where id = ?";
-	private static String DELETE = "delete from cliente where id = ?";
-	
 
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
 
-	public Cliente salvar(Cliente cliente) {
-		jdbcTemplate.update(INSERT, new Object[] { cliente.getNome() });
-		return cliente;
-	}
+    @Autowired
+    private EntityManager entityManager;
 
-	public List<Cliente> obterTodos() {
+    @Transactional
+    //a anotação Transactional serve para informar que o o metodo vai gerar uma transação na base de dados.
+    public Cliente salvar(Cliente cliente) {
+        entityManager.persist(cliente);
+        return cliente;
+    }
 
-		return jdbcTemplate.query(SELECT_ALL, obterClienteMapper());
-	}
-	
-	private RowMapper<Cliente> obterClienteMapper() {
-		return new RowMapper<Cliente>() {
-			
-			@Override
-			public Cliente mapRow(ResultSet resultSet, int i) throws SQLException {
+    //Buscar todos os clientes
+    @Transactional(readOnly = true)
+    public List<Cliente> obterTodos() {
+        return entityManager.
+                createQuery("from Cliente", Cliente.class).
+                getResultList();
+    }
 
-				Integer id = resultSet.getInt("id");
-				String nome = resultSet.getString("nome");
+    //Busca cliente por nome
+    @Transactional(readOnly = true) //Informa que Transação é apenas de leitura
+    public List<Cliente> buscarPorNome(String nome) {
+        String jpql = "select c from Cliente c where c.nome like :nome ";  //fazendo a query jpql
+        TypedQuery<Cliente> query = entityManager.createQuery(jpql, Cliente.class); //chamando o EM e passando a query e a entidade q deve ser criada
+        query.setParameter("nome", "%" + nome + "%"); //setando os parametros da consulta
+        return query.getResultList(); // retornando a consulta
+    }
 
-				return new Cliente(id, nome);
-			}
-		};
-	}
-	
-	//bucas cliente por nome
-	public List<Cliente> buscarPorNome(String nome){
-		
-		return jdbcTemplate.query(SELECT_ALL.concat(" where nome like ?"), 
-				new Object[] {"%" + nome + "%" },
-				obterClienteMapper());
-		
-	}
+    //atualiza o cliente na base
+    @Transactional
+    public Cliente atualizar (Cliente cliente) {
+        //metodo no entityManager que é utilizado para atualizar uma entidade.
+        entityManager.merge(cliente);
+        return cliente;
+    }
 
-	//atualiza o cliente na base
-	public Cliente atualizar(Cliente cliente) {
-		jdbcTemplate.update(UPDATE, new Object[] { cliente.getNome(), cliente.getId() });
+    //Deletar cliente por nome
+    @Transactional
+    public void deletar(Cliente cliente) {
+        if (!entityManager.contains(cliente)){
+            cliente = entityManager.merge(cliente); // caso a Entidade Cliente não esteja sync com o EM realizmos um merge pra syncar, em caso de erro DETACHED DELETE
+        }
+        entityManager.remove(cliente);
+    }
 
-		return cliente;
-	}
+    //Deletar cliente por ID
+    @Transactional
+    public void deletar(Integer id) {
+        Cliente cliente = entityManager.find(Cliente.class, id);
 
-	//Deleta cliente por nome
-	public void deletar(Cliente cliente) {
-		deletar(cliente.getId());
-	}
+        deletar(cliente);
+    }
 
-	//Deleta cliente por ID
-	public void deletar(Integer id) {
-		jdbcTemplate.update(DELETE, new Object[] { id });
-	}
-	
 }
