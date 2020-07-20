@@ -1,10 +1,18 @@
 package com.ccc.vendas.api.domain.entity;
 
+import javax.persistence.*;
+
+
 public class ItemPedido {
 
 	private Integer id;
+
+
 	private Pedido pedido;
+
 	private	Produto produto;
+
+
 	private Integer quantidade;
 	
 	

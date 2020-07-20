@@ -1,15 +1,25 @@
 package com.ccc.vendas.api.domain.entity;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+
 public class Pedido {
 
-	private Cliente cliente;
-	private LocalDate dataPedido;
-	private BigDecimal total;
-	
 	private Integer id;
+
+	private Cliente cliente;
+
+	private LocalDate dataPedido;
+
+	private BigDecimal total;
+
+
+
 	public Integer getId() {
 		return id;
 	}

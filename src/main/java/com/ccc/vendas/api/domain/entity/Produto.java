@@ -1,9 +1,13 @@
 package com.ccc.vendas.api.domain.entity;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.math.BigDecimal;
 
 public class Produto {
-	
+
+
 	private Integer id;
 	private String descricao;
 	private BigDecimal precoUnitario;

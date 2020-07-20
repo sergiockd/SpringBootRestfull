@@ -1,19 +1,15 @@
 package com.ccc.vendas.api.repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Repository;
-
-import com.ccc.vendas.api.domain.entity.Cliente;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.ccc.vendas.api.domain.entity.Cliente;
 
 @Repository
 public class ClientesRepository {
