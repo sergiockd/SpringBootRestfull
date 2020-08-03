@@ -1,70 +1,29 @@
 package com.ccc.vendas.api.repository;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.ccc.vendas.api.domain.entity.Cliente;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+public interface ClientesRepository extends JpaRepository<Cliente, Integer> {
 
-import com.ccc.vendas.api.domain.entity.Cliente;
+    @Query (value = "select c from Cliente c where c.nome like :nome ")
+    List<Cliente> encontrarPorNome(@Param("nome") String nome);
 
-@Repository
-public class ClientesRepository {
+    @Query(value = "delete from Cliente c where c.nome =:nome")
+    @Modifying //pra informação que a tabela será atualizada. Serve tanto pra update quanto pra delete
 
+    void deleteByNome(String nome);
 
-    @Autowired
-    private EntityManager entityManager;
+    boolean existsByNome (String nome);
 
-    @Transactional
-    //a anotação Transactional serve para informar que o o metodo vai gerar uma transação na base de dados.
-    public Cliente salvar(Cliente cliente) {
-        entityManager.persist(cliente);
-        return cliente;
-    }
+    @Query("select c from Cliente c left join fetch c.pedidos where c.id =:id ") //LeftJoin. Eu posso ter ou não pedidos(Sem o left ele só tras o cliente se exisistir pedidos)
+    Cliente findClienteFetchPedidos(@Param("id") Integer id);
 
-    //Buscar todos os clientes
-    @Transactional(readOnly = true)
-    public List<Cliente> obterTodos() {
-        return entityManager.
-                createQuery("from Cliente", Cliente.class).
-                getResultList();
-    }
-
-    //Busca cliente por nome
-    @Transactional(readOnly = true) //Informa que Transação é apenas de leitura
-    public List<Cliente> buscarPorNome(String nome) {
-        String jpql = "select c from Cliente c where c.nome like :nome ";  //fazendo a query jpql
-        TypedQuery<Cliente> query = entityManager.createQuery(jpql, Cliente.class); //chamando o EM e passando a query e a entidade q deve ser criada
-        query.setParameter("nome", "%" + nome + "%"); //setando os parametros da consulta
-        return query.getResultList(); // retornando a consulta
-    }
-
-    //atualiza o cliente na base
-    @Transactional
-    public Cliente atualizar (Cliente cliente) {
-        //metodo no entityManager que é utilizado para atualizar uma entidade.
-        entityManager.merge(cliente);
-        return cliente;
-    }
-
-    //Deletar cliente por nome
-    @Transactional
-    public void deletar(Cliente cliente) {
-        if (!entityManager.contains(cliente)){
-            cliente = entityManager.merge(cliente); // caso a Entidade Cliente não esteja sync com o EM realizmos um merge pra syncar, em caso de erro DETACHED DELETE
-        }
-        entityManager.remove(cliente);
-    }
-
-    //Deletar cliente por ID
-    @Transactional
-    public void deletar(Integer id) {
-        Cliente cliente = entityManager.find(Cliente.class, id);
-
-        deletar(cliente);
-    }
+ 
 
 }

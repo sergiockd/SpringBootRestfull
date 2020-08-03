@@ -1,6 +1,7 @@
 package com.ccc.vendas.api.domain.entity;
 
 import javax.persistence.*;
+import java.util.Set;
 
 
 //@Table(name = "tb_cliente") Exemplo, caso o nome da classe seja diferente do nome da table, podemos utilizar essa anotacação
@@ -19,6 +20,16 @@ public class Cliente {
 	@Column(name = "nome", length = 100)
 	private String nome;
 
+	@OneToMany (mappedBy = "cliente")
+	private Set<Pedido> pedidos;
+
+	public Set<Pedido> getPedidos() {
+		return pedidos;
+	}
+
+	public void setPedidos(Set<Pedido> pedidos) {
+		this.pedidos = pedidos;
+	}
 
 	public Cliente() {
 
