@@ -1,5 +1,7 @@
 package com.ccc.vendas.api.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -20,7 +22,8 @@ public class Cliente {
 	@Column(name = "nome", length = 100)
 	private String nome;
 
-	@OneToMany (mappedBy = "cliente")
+	@JsonIgnore //Ele é ignorado e não é retornado no Json
+	@OneToMany (mappedBy = "cliente", fetch = FetchType.LAZY)
 	private Set<Pedido> pedidos;
 
 	public Set<Pedido> getPedidos() {
