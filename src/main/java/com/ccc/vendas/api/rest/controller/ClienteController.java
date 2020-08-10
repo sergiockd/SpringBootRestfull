@@ -3,6 +3,7 @@ package com.ccc.vendas.api.rest.controller;
 
 import com.ccc.vendas.api.domain.entity.Cliente;
 import com.ccc.vendas.api.repository.ClientesRepository;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -46,10 +47,31 @@ public class ClienteController {
 
         if (cliente.isPresent()) {
             clientesRepository.deleteById(id);
-            return  ResponseEntity.noContent().build();
+            return ResponseEntity.noContent().build();
         }
 
         return ResponseEntity.notFound().build();
+
+    }
+
+    @PutMapping("/api/clientes/{id}")
+    @ResponseBody
+    public ResponseEntity updateCliente(@PathVariable Integer id, @RequestBody Cliente cliente) {
+
+        return clientesRepository
+                .findById(id)
+                //Se o OPTIONAL estiver populado. acredito que true. ele executa o map
+                .map(clienteExistente -> {
+                    cliente.setId(clienteExistente.getId());
+                    clientesRepository.save(cliente);
+                    return ResponseEntity.noContent().build();
+                }).orElseGet(() -> ResponseEntity.notFound().build());
+
+    }
+
+    @GetMapping("/api/clientes")
+    @ResponseBody
+    public ResponseEntity find (Cliente filtro) {
 
     }
 
