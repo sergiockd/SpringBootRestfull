@@ -6,13 +6,13 @@ import com.ccc.vendas.api.repository.ClientesRepository;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
-@Controller
+@RestController
+@RequestMapping("/api/clientes/")
 public class ClienteController {
 
 
@@ -23,8 +23,7 @@ public class ClienteController {
         this.clientesRepository = clientesRepository;
     }
 
-    @GetMapping("/api/clientes/{id}")
-    @ResponseBody
+    @GetMapping("{id}")
     public ResponseEntity<Cliente> getClienteById(@PathVariable Integer id) {
         Optional<Cliente> cliente = clientesRepository.findById(id);
 
@@ -35,15 +34,13 @@ public class ClienteController {
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/api/clientes")
-    @ResponseBody
+    @PostMapping
     public ResponseEntity saveCliente(@RequestBody Cliente cliente) {
         Cliente clienteSalvo = clientesRepository.save(cliente);
         return ResponseEntity.ok(clienteSalvo);
     }
 
-    @DeleteMapping("/api/clientes/{id}")
-    @ResponseBody
+    @DeleteMapping("{id}")
     public ResponseEntity<Cliente> deleteCliente(@PathVariable Integer id) {
         Optional<Cliente> cliente = clientesRepository.findById(id);
 
@@ -56,8 +53,7 @@ public class ClienteController {
 
     }
 
-    @PutMapping("/api/clientes/{id}")
-    @ResponseBody
+    @PutMapping("{id}")
     public ResponseEntity updateCliente(@PathVariable Integer id, @RequestBody Cliente cliente) {
 
         return clientesRepository
@@ -71,8 +67,7 @@ public class ClienteController {
 
     }
 
-    @GetMapping("/api/clientes")
-    @ResponseBody
+    @GetMapping
     public ResponseEntity find(Cliente filtro) {
         ExampleMatcher matcher = ExampleMatcher
                 .matching()
@@ -80,7 +75,7 @@ public class ClienteController {
                 .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING);
 
         Example example = Example.of(filtro, matcher);
-            List<Cliente> lista = clientesRepository.findAll(example);
+        List<Cliente> lista = clientesRepository.findAll(example);
         return ResponseEntity.ok(lista);
     }
 
